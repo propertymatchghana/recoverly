@@ -37,8 +37,8 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
               Find what your business needs to act on.
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600">
-              Upload your existing Excel or CSV and Recoverly turns your business data into a clear action list — unpaid invoices, unanswered quotations, inactive customers and follow-ups that need attention.
-
+              Upload your existing Excel or CSV data and Recoverly identifies overdue payments, unanswered quotations, customers needing follow-up and other business actions that deserve attention.
+            </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <button onClick={onTry} className="btn-primary w-full sm:w-auto">
                 Try Recoverly
@@ -59,7 +59,7 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
               </div>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                  <p className="text-xs text-gray-500">Payments needing attention</p>
+                  <p className="text-xs text-gray-500">Money needing attention</p>
                   <p className="mt-1 text-xl font-bold text-red-600">GH₵18,500</p>
                   <p className="text-xs text-gray-400">3 records · Potentially overdue</p>
                 </div>
@@ -150,7 +150,7 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
           <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Turn your business data into today's action list.</h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-gray-600">No backend required. No data leaves your browser. Start with demo data in seconds.</p>
           <button onClick={onTry} className="btn-primary mt-8">
-            Try Recoverly Free
+            Try Recoverly
             <ArrowRight size={18} />
           </button>
         </div>
