@@ -36,14 +36,15 @@ function AppContent() {
   const [page, setPage] = useState<Page>('landing');
   const [actionId, setActionId] = useState<string | null>(null);
 
-  // Restore page on load
   useEffect(() => {
-    if (state.isAuth && state.records.length > 0 && page === 'landing') {
+    if (state.isAuth && page === 'landing') {
       setPage('dashboard');
     }
-  }, [state.isAuth]);
+  }, [state.isAuth, page]);
 
-  const handleNavigate = (p: string) => setPage(p as Page);
+  const handleNavigate = (p: string) => {
+    setPage(p as Page);
+  };
 
   const handleViewDetails = (id: string) => {
     setActionId(id);
@@ -64,54 +65,144 @@ function AppContent() {
   const handleMappingComplete = () => setPage('analysis');
   const handleAnalysisComplete = () => setPage('dashboard');
 
-  // Landing and auth pages — no layout
   if (page === 'landing') {
-    return <LandingPage onTry={() => setPage('signup')} onLogin={() => setPage('login')} />;
+    return (
+      <LandingPage
+        onTry={() => setPage('signup')}
+        onLogin={() => setPage('login')}
+      />
+    );
   }
 
   if (page === 'login') {
-    return <AuthPage mode="login" onAuth={() => setPage('dashboard')} onSwitch={() => setPage('signup')} />;
+    return (
+      <AuthPage
+        mode="login"
+        onAuth={() => setPage('dashboard')}
+        onSwitch={() => setPage('signup')}
+      />
+    );
   }
 
   if (page === 'signup') {
-    return <AuthPage mode="signup" onAuth={() => setPage('dashboard')} onSwitch={() => setPage('login')} />;
+    return (
+      <AuthPage
+        mode="signup"
+        onAuth={() => setPage('dashboard')}
+        onSwitch={() => setPage('login')}
+      />
+    );
   }
 
-  // App pages — with layout
   const renderPage = () => {
     switch (page) {
       case 'dashboard':
-        return <DashboardPage onViewDetails={handleViewDetails} onGenerateMessage={handleGenerateMessage} onLoadDemo={handleDemo} onUpload={() => setPage('upload')} />;
+        return (
+          <DashboardPage
+            onViewDetails={handleViewDetails}
+            onGenerateMessage={handleGenerateMessage}
+            onLoadDemo={handleDemo}
+            onUpload={() => setPage('upload')}
+          />
+        );
+
       case 'upload':
         return <UploadPage onParsed={handleParsed} onDemo={handleDemo} />;
+
       case 'mapping':
         return <ColumnMappingPage onComplete={handleMappingComplete} />;
+
       case 'analysis':
-        return <AnalysisResultsPage onContinue={handleAnalysisComplete} />;
+        return (
+          <AnalysisResultsPage onContinue={handleAnalysisComplete} />
+        );
+
       case 'action':
         return actionId ? (
-          <ActionDetailsPage recordId={actionId} onBack={() => setPage('dashboard')} onGenerateMessage={() => setPage('message')} />
-        ) : <DashboardPage onViewDetails={handleViewDetails} onGenerateMessage={handleGenerateMessage} onLoadDemo={handleDemo} onUpload={() => setPage('upload')} />;
+          <ActionDetailsPage
+            recordId={actionId}
+            onBack={() => setPage('dashboard')}
+            onGenerateMessage={() => setPage('message')}
+          />
+        ) : (
+          <DashboardPage
+            onViewDetails={handleViewDetails}
+            onGenerateMessage={handleGenerateMessage}
+            onLoadDemo={handleDemo}
+            onUpload={() => setPage('upload')}
+          />
+        );
+
       case 'message':
         return actionId ? (
-          <MessageGeneratorPage recordId={actionId} onBack={() => setPage('dashboard')} />
-        ) : <DashboardPage onViewDetails={handleViewDetails} onGenerateMessage={handleGenerateMessage} onLoadDemo={handleDemo} onUpload={() => setPage('upload')} />;
+          <MessageGeneratorPage
+            recordId={actionId}
+            onBack={() => setPage('dashboard')}
+          />
+        ) : (
+          <DashboardPage
+            onViewDetails={handleViewDetails}
+            onGenerateMessage={handleGenerateMessage}
+            onLoadDemo={handleDemo}
+            onUpload={() => setPage('upload')}
+          />
+        );
+
       case 'money':
-        return <MoneyPage onViewDetails={handleViewDetails} onGenerateMessage={handleGenerateMessage} />;
+        return (
+          <MoneyPage
+            onViewDetails={handleViewDetails}
+            onGenerateMessage={handleGenerateMessage}
+          />
+        );
+
       case 'sales':
-        return <SalesPage onViewDetails={handleViewDetails} onGenerateMessage={handleGenerateMessage} />;
+        return (
+          <SalesPage
+            onViewDetails={handleViewDetails}
+            onGenerateMessage={handleGenerateMessage}
+          />
+        );
+
       case 'customers':
-        return <CustomersPage onViewDetails={handleViewDetails} onGenerateMessage={handleGenerateMessage} />;
+        return (
+          <CustomersPage
+            onViewDetails={handleViewDetails}
+            onGenerateMessage={handleGenerateMessage}
+          />
+        );
+
       case 'actions':
-        return <ActionsPage onViewDetails={handleViewDetails} onGenerateMessage={handleGenerateMessage} />;
+        return (
+          <ActionsPage
+            onViewDetails={handleViewDetails}
+            onGenerateMessage={handleGenerateMessage}
+          />
+        );
+
       case 'settings':
         return <SettingsPage />;
+
       default:
-        return <DashboardPage onViewDetails={handleViewDetails} onGenerateMessage={handleGenerateMessage} onLoadDemo={handleDemo} onUpload={() => setPage('upload')} />;
+        return (
+          <DashboardPage
+            onViewDetails={handleViewDetails}
+            onGenerateMessage={handleGenerateMessage}
+            onLoadDemo={handleDemo}
+            onUpload={() => setPage('upload')}
+          />
+        );
     }
   };
 
-  return <AppLayout currentPage={page} onNavigate={handleNavigate}>{renderPage()}</AppLayout>;
+  return (
+    <AppLayout
+      currentPage={page}
+      onNavigate={handleNavigate}
+    >
+      {renderPage()}
+    </AppLayout>
+  );
 }
 
 function App() {
