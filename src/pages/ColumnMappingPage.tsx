@@ -41,7 +41,16 @@ export function ColumnMappingPage({ onComplete }: ColumnMappingPageProps) {
     setLoading(true);
 
     try {
-      const { data, error: rpcError } = await supabase.rpc('use_analysis');
+      const {
+  data: { session },
+} = await supabase.auth.getSession();
+
+if (!session) {
+  setError('Please sign in before running an analysis.');
+  return;
+}
+
+const { data, error: rpcError } = await supabase.rpc('use_analysis');
 
       if (rpcError) {
         throw rpcError;
