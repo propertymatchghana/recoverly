@@ -54,9 +54,9 @@ const plans = [
       throw new Error('Your session has expired. Please sign in again.');
     }
 
-    const { data, error } = await supabase.functions.invoke(
-      'clever-processor'
-      {
+   const { data, error } = await supabase.functions.invoke(
+  'clever-processor',
+  {
         body: {
           planCode,
           email: user.email,
