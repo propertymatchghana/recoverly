@@ -72,7 +72,7 @@ const plans = [
       throw new Error('Unable to start payment. Please try again.');
     }
 
-    window.location.href = data.authorization_url;
+   window.location.assign(data.authorization_url);
   } catch (err) {
     setPaymentError(
       err instanceof Error
