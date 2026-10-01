@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { supabase } from '@/lib/supabase';
 import { useApp } from '@/context/AppContext';
 import { CURRENCIES } from '@/lib/format';
-import { Settings as SettingsIcon, Building2, DollarSign, MessageSquare, Trash2, CheckCircle2 } from 'lucide-react';
+import { Building2, DollarSign, MessageSquare, Trash2, CheckCircle2, CreditCard } from 'lucide-react';
 
 export function SettingsPage() {
   const { state, updateSettings, clearData } = useApp();
@@ -9,6 +10,79 @@ export function SettingsPage() {
   const [currency, setCurrency] = useState(state.settings.currency);
   const [tone, setTone] = useState(state.settings.followUpTone);
   const [saved, setSaved] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState<string | null>(null);
+const [paymentError, setPaymentError] = useState('');
+
+const plans = [
+  {
+    name: 'Starter',
+    price: 150,
+    planCode: 'PLN_7djxvieib9ooist',
+    description: '500 records and 20 analyses per month.',
+  },
+  {
+    name: 'Business',
+    price: 300,
+    planCode: 'PLN_uxzwagf2h20ao10',
+    description: '2,000 records and 50 analyses per month.',
+  },
+  {
+    name: 'Pro',
+    price: 600,
+    planCode: 'PLN_0ox4up9rf5044th',
+    description: '10,000 records and 200 analyses per month.',
+  },
+];
+  const handleSubscribe = async (planCode: string) => {
+  setPaymentError('');
+  setPaymentLoading(planCode);
+
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user?.email) {
+      throw new Error('Please sign in before choosing a plan.');
+    }
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      throw new Error('Your session has expired. Please sign in again.');
+    }
+
+    const { data, error } = await supabase.functions.invoke(
+      'initialize-paystack',
+      {
+        body: {
+          planCode,
+          email: user.email,
+        },
+      }
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data?.authorization_url) {
+      throw new Error('Unable to start payment. Please try again.');
+    }
+
+    window.location.href = data.authorization_url;
+  } catch (err) {
+    setPaymentError(
+      err instanceof Error
+        ? err.message
+        : 'Unable to start payment. Please try again.'
+    );
+  } finally {
+    setPaymentLoading(null);
+  }
+};
 
   const handleSave = () => {
     updateSettings({ businessName, currency, followUpTone: tone });
@@ -88,7 +162,63 @@ export function SettingsPage() {
           </span>
         )}
       </div>
+      <div className="card p-5 sm:p-6">
+        <div className="mb-5 flex items-center gap-2">
+          <CreditCard size={18} className="text-gray-400" />
+          <h2 className="text-base font-semibold text-gray-900">
+            Recoverly Plans
+          </h2>
+        </div>
 
+        <p className="mb-5 text-sm text-gray-500">
+          Your free trial includes up to 3 analyses. Choose a monthly plan to
+          continue using Recoverly after your trial or analysis limit ends.
+        </p>
+
+        <div className="space-y-4">
+          {plans.map((plan) => (
+            <div
+              key={plan.planCode}
+              className="rounded-xl border border-gray-200 p-4"
+            >
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="font-semibold text-gray-900">
+                    Recoverly {plan.name}
+                  </h3>
+
+                  <p className="mt-1 text-sm text-gray-500">
+                    {plan.description}
+                  </p>
+
+                  <p className="mt-2 text-lg font-bold text-gray-900">
+                    GH₵{plan.price}
+                    <span className="text-sm font-normal text-gray-500">
+                      /month
+                    </span>
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => handleSubscribe(plan.planCode)}
+                  disabled={paymentLoading !== null}
+                  className="btn-primary shrink-0 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {paymentLoading === plan.planCode
+                    ? 'Starting payment...'
+                    : 'Choose plan'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {paymentError && (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {paymentError}
+          </div>
+        )}
+      </div>
       <div className="card border-red-200 p-5 sm:p-6">
         <div className="mb-3 flex items-center gap-2">
           <Trash2 size={18} className="text-red-500" />
