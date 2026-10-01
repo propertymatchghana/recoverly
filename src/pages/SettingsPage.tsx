@@ -55,7 +55,7 @@ const plans = [
     }
 
     const { data, error } = await supabase.functions.invoke(
-      'initialize-paystack',
+      'clever-processor'
       {
         body: {
           planCode,
