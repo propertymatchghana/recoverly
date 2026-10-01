@@ -67,15 +67,28 @@ export function ColumnMappingPage({ onComplete }: ColumnMappingPageProps) {
       }
 
       if (!data?.allowed) {
-        if (data?.reason === 'record_limit_reached') {
-          setError(
-            `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
-          );
-        } else if (data?.reason === 'analysis_limit_reached') {
-          setError(
-            `You've used all ${data.analyses_limit} analyses available on your current plan.`
-          );
-        } else if (data?.reason === 'trial_expired') {
+  if (data?.reason === 'record_limit_reached') {
+    setError(
+      `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
+    );
+  } else if (data?.reason === 'analysis_limit_reached') {
+    setError(
+      `You've used all ${data.analyses_limit} analyses available on your current plan.`
+    );
+  } else if (data?.reason === 'trial_expired') {
+    setError(
+      'Your free trial has ended. Please choose a plan to continue using Recoverly.'
+    );
+  } else if (data?.reason === 'not_authenticated') {
+    setError('Please sign in before running an analysis.');
+  } else {
+    setError(
+      'Analysis is not available on your current account. Please check your subscription.'
+    );
+  }
+
+  return;
+}
           setError(
             'Your free trial has ended. Please choose a plan to continue using Recoverly.'
           );
