@@ -1,6 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
-import { autoDetectColumns, FIELD_KEYS, FIELD_LABELS } from '@/lib/columnDetection';
+import {
+  autoDetectColumns,
+  FIELD_KEYS,
+  FIELD_LABELS,
+} from '@/lib/columnDetection';
 import { supabase } from '@/lib/supabase';
 import { ArrowRight, CheckCircle2, Info } from 'lucide-react';
 import type { ColumnMapping } from '@/types';
@@ -13,6 +17,7 @@ export function ColumnMappingPage({ onComplete }: ColumnMappingPageProps) {
   const { state, setColumnMapping, runAnalysis } = useApp();
   const headers = state.parsedFile?.headers || [];
   const initial = useMemo(() => autoDetectColumns(headers), [headers]);
+
   const [mapping, setMapping] = useState<ColumnMapping>(
     state.columnMapping || initial
   );
@@ -42,22 +47,31 @@ export function ColumnMappingPage({ onComplete }: ColumnMappingPageProps) {
 
     try {
       const {
-  data: { session },
-} = await supabase.auth.getSession();
+        data: { session },
+      } = await supabase.auth.getSession();
 
-if (!session) {
-  setError('Please sign in before running an analysis.');
-  return;
-}
+      if (!session) {
+        setError('Please sign in before running an analysis.');
+        return;
+      }
 
-const { data, error: rpcError } = await supabase.rpc('use_analysis');
+      const { data, error: rpcError } = await supabase.rpc(
+        'use_analysis_with_records',
+        {
+          p_record_count: state.parsedFile!.rows.length,
+        }
+      );
 
       if (rpcError) {
         throw rpcError;
       }
 
       if (!data?.allowed) {
-        if (data?.reason === 'analysis_limit_reached') {
+        if (data?.reason === 'record_limit_reached') {
+          setError(
+            `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
+          );
+        } else if (data?.reason === 'analysis_limit_reached') {
           setError(
             `You've used all ${data.analyses_limit} analyses available on your current plan.`
           );
@@ -77,7 +91,7 @@ const { data, error: rpcError } = await supabase.rpc('use_analysis');
       }
 
       setColumnMapping(mapping);
-      runAnalysis(state.parsedFile!.rows, mapping);
+      runAnalysis(state.parsedFile.rows, mapping);
       onComplete();
     } catch (err) {
       setError(
@@ -98,6 +112,7 @@ const { data, error: rpcError } = await supabase.rpc('use_analysis');
         <h1 className="text-2xl font-bold text-gray-900">
           Map your columns
         </h1>
+
         <p className="mt-1 text-gray-500">
           We've automatically detected the most likely columns. Review and
           adjust if needed.
@@ -106,6 +121,7 @@ const { data, error: rpcError } = await supabase.rpc('use_analysis');
 
       <div className="flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-700">
         <Info size={18} className="shrink-0" />
+
         <span>
           {detectedCount} of {FIELD_KEYS.length} fields detected. You can
           adjust any mapping below.
@@ -125,7 +141,10 @@ const { data, error: rpcError } = await supabase.rpc('use_analysis');
               >
                 <div className="flex items-center gap-2 sm:w-1/3">
                   {isDetected && (
-                    <CheckCircle2 size={16} className="text-green-500" />
+                    <CheckCircle2
+                      size={16}
+                      className="text-green-500"
+                    />
                   )}
 
                   <label className="text-sm font-medium text-gray-700">
@@ -171,7 +190,9 @@ const { data, error: rpcError } = await supabase.rpc('use_analysis');
         disabled={loading}
         className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {loading ? 'Checking your analysis access...' : 'Continue to analysis'}
+        {loading
+          ? 'Checking your analysis access...'
+          : 'Continue to analysis'}
 
         {!loading && <ArrowRight size={18} />}
       </button>
