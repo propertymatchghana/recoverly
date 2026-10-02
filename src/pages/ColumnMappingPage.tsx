@@ -70,12 +70,10 @@ export function ColumnMappingPage({
       return;
     }
 
-    const recordCount = state.parsedFile!.rows.length;
-
     const { data, error: rpcError } = await supabase.rpc(
       'use_analysis_with_records',
       {
-        p_record_count: recordCount,
+        p_record_count: state.parsedFile!.rows.length,
       }
     );
 
