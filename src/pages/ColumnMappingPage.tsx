@@ -1,3 +1,4 @@
+```tsx
 import { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
@@ -13,14 +14,22 @@ interface ColumnMappingPageProps {
   onComplete: () => void;
 }
 
-export function ColumnMappingPage({ onComplete }: ColumnMappingPageProps) {
+export function ColumnMappingPage({
+  onComplete,
+}: ColumnMappingPageProps) {
   const { state, setColumnMapping, runAnalysis } = useApp();
+
   const headers = state.parsedFile?.headers || [];
-  const initial = useMemo(() => autoDetectColumns(headers), [headers]);
+
+  const initial = useMemo(
+    () => autoDetectColumns(headers),
+    [headers]
+  );
 
   const [mapping, setMapping] = useState<ColumnMapping>(
     state.columnMapping || initial
   );
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -38,7 +47,10 @@ export function ColumnMappingPage({ onComplete }: ColumnMappingPageProps) {
     field: keyof ColumnMapping,
     value: string
   ) => {
-    setMapping((prev) => ({ ...prev, [field]: value || null }));
+    setMapping((prev) => ({
+      ...prev,
+      [field]: value || null,
+    }));
   };
 
   const handleContinue = async () => {
@@ -51,14 +63,28 @@ export function ColumnMappingPage({ onComplete }: ColumnMappingPageProps) {
       } = await supabase.auth.getSession();
 
       if (!session) {
-        setError('Please sign in before running an analysis.');
+        setError(
+          'Please sign in before running an analysis.'
+        );
         return;
       }
 
-      const { data, error: rpcError } = await supabase.rpc(
+      const recordCount = state.parsedFile.rows.length;
+
+      if (recordCount <= 0) {
+        setError(
+          'Your uploaded file does not contain any records to analyze.'
+        );
+        return;
+      }
+
+      const {
+        data,
+        error: rpcError,
+      } = await supabase.rpc(
         'use_analysis_with_records',
         {
-          p_record_count: state.parsedFile!.rows.length,
+          p_record_count: recordCount,
         }
       );
 
@@ -66,34 +92,35 @@ export function ColumnMappingPage({ onComplete }: ColumnMappingPageProps) {
         throw rpcError;
       }
 
-if (!data?.allowed) {
-  if (data?.reason === 'record_limit_reached') {
-    setError(
-      `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
-    );
-  } else if (data?.reason === 'analysis_limit_reached') {
-    setError(
-      `You've used all ${data.analyses_limit} analyses available on your current plan.`
-    );
-  } else if (data?.reason === 'trial_expired') {
-    setError(
-      'Your free trial has ended. Please choose a plan to continue using Recoverly.'
-    );
-  } else if (data?.reason === 'not_authenticated') {
-    setError('Please sign in before running an analysis.');
-  } else {
-    setError(
-      'Analysis is not available on your current account. Please check your subscription.'
-    );
-  }
-
-  return;
-}
+      if (!data?.allowed) {
+        if (data?.reason === 'record_limit_reached') {
+          setError(
+            `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
+          );
+        } else if (
+          data?.reason === 'analysis_limit_reached'
+        ) {
+          setError(
+            `You've used all ${data.analyses_limit} analyses available on your current plan.`
+          );
+        } else if (
+          data?.reason === 'trial_expired'
+        ) {
           setError(
             'Your free trial has ended. Please choose a plan to continue using Recoverly.'
           );
-        } else if (data?.reason === 'not_authenticated') {
-          setError('Please sign in before running an analysis.');
+        } else if (
+          data?.reason === 'not_authenticated'
+        ) {
+          setError(
+            'Please sign in before running an analysis.'
+          );
+        } else if (
+          data?.reason === 'no_subscription'
+        ) {
+          setError(
+            'No active Recoverly subscription was found for your account.'
+          );
         } else {
           setError(
             'Analysis is not available on your current account. Please check your subscription.'
@@ -104,7 +131,12 @@ if (!data?.allowed) {
       }
 
       setColumnMapping(mapping);
-      runAnalysis(state.parsedFile.rows, mapping);
+
+      runAnalysis(
+        state.parsedFile.rows,
+        mapping
+      );
+
       onComplete();
     } catch (err) {
       setError(
@@ -117,7 +149,8 @@ if (!data?.allowed) {
     }
   };
 
-  const detectedCount = Object.values(mapping).filter(Boolean).length;
+  const detectedCount =
+    Object.values(mapping).filter(Boolean).length;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -127,25 +160,32 @@ if (!data?.allowed) {
         </h1>
 
         <p className="mt-1 text-gray-500">
-          We've automatically detected the most likely columns. Review and
-          adjust if needed.
+          We've automatically detected the most likely
+          columns. Review and adjust if needed.
         </p>
       </div>
 
       <div className="flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-700">
-        <Info size={18} className="shrink-0" />
+        <Info
+          size={18}
+          className="shrink-0"
+        />
 
         <span>
-          {detectedCount} of {FIELD_KEYS.length} fields detected. You can
-          adjust any mapping below.
+          {detectedCount} of {FIELD_KEYS.length}{' '}
+          fields detected. You can adjust any
+          mapping below.
         </span>
       </div>
 
       <div className="card p-5 sm:p-6">
         <div className="space-y-4">
           {FIELD_KEYS.map((field) => {
-            const value = mapping[field as keyof ColumnMapping];
-            const isDetected = value && value !== '';
+            const value =
+              mapping[field as keyof ColumnMapping];
+
+            const isDetected =
+              value && value !== '';
 
             return (
               <div
@@ -177,10 +217,15 @@ if (!data?.allowed) {
                     className="select-field"
                     disabled={loading}
                   >
-                    <option value="">— Not mapped —</option>
+                    <option value="">
+                      — Not mapped —
+                    </option>
 
                     {headers.map((h) => (
-                      <option key={h} value={h}>
+                      <option
+                        key={h}
+                        value={h}
+                      >
                         {h}
                       </option>
                     ))}
@@ -207,8 +252,11 @@ if (!data?.allowed) {
           ? 'Checking your analysis access...'
           : 'Continue to analysis'}
 
-        {!loading && <ArrowRight size={18} />}
+        {!loading && (
+          <ArrowRight size={18} />
+        )}
       </button>
     </div>
   );
 }
+```
