@@ -70,12 +70,10 @@ export function ColumnMappingPage({
       return;
     }
 
-    const recordCount = state.parsedFile!.rows.length;
-
     const { data, error: rpcError } = await supabase.rpc(
       'use_analysis_with_records',
       {
-        p_record_count: recordCount,
+        p_record_count: state.parsedFile!.rows.length,
       }
     );
 
@@ -84,15 +82,15 @@ export function ColumnMappingPage({
     }
 
     if (!data?.allowed) {
-  if (data?.reason === 'record_limit_reached') {
-    setError(
-      `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
-    );
-  } else if (data?.reason === 'analysis_limit_reached') {
-    setError(
-      `You've used all ${data.analyses_limit} analyses available on your current plan.`
-    );
-  } else if (data?.reason === 'trial_expired') {
+      if (data?.reason === 'record_limit_reached') {
+        setError(
+          `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
+        );
+      } else if (data?.reason === 'analysis_limit_reached') {
+        setError(
+          `You've used all ${data.analyses_limit} analyses available on your current plan.`
+        );
+      } else if (data?.reason === 'trial_expired') {
         setError(
           'Your free trial has ended. Please choose a plan to continue using Recoverly.'
         );
