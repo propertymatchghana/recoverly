@@ -101,7 +101,6 @@ if (!data?.allowed) {
 
   return;
 }
-
       setColumnMapping(mapping);
       runAnalysis(state.parsedFile!.rows, mapping);
       onComplete();
