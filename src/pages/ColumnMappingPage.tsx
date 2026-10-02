@@ -6,11 +6,7 @@ import {
   FIELD_LABELS,
 } from '@/lib/columnDetection';
 import { supabase } from '@/lib/supabase';
-import {
-  ArrowRight,
-  CheckCircle2,
-  Info,
-} from 'lucide-react';
+import { ArrowRight, CheckCircle2, Info } from 'lucide-react';
 import type { ColumnMapping } from '@/types';
 
 interface ColumnMappingPageProps {
@@ -57,67 +53,105 @@ export function ColumnMappingPage({
   };
 
   const handleContinue = async () => {
-  setError('');
-  setLoading(true);
+    setError('');
+    setLoading(true);
 
-  try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    if (!session) {
-      setError('Please sign in before running an analysis.');
-      return;
-    }
-
-    const { data, error: rpcError } = await supabase.rpc(
-      'use_analysis_with_records',
-      {
-        p_record_count: state.parsedFile!.rows.length,
-      }
-    );
-
-    if (rpcError) {
-      throw rpcError;
-    }
-
-    if (!data?.allowed) {
-      if (data?.reason === 'record_limit_reached') {
+      if (!session) {
         setError(
-          `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
+          'Please sign in before running an analysis.'
         );
-      } else if (data?.reason === 'analysis_limit_reached') {
-        setError(
-          `You've used all ${data.analyses_limit} analyses available on your current plan.`
-        );
-      } else if (data?.reason === 'trial_expired') {
-        setError(
-          'Your free trial has ended. Please choose a plan to continue using Recoverly.'
-        );
-      } else if (data?.reason === 'not_authenticated') {
-        setError('Please sign in before running an analysis.');
-      } else {
-        setError(
-          'Analysis is not available on your current account. Please check your subscription.'
-        );
+        return;
       }
 
-      return;
-    }
+      const recordCount =
+        state.parsedFile!.rows.length;
 
-    setColumnMapping(mapping);
-    runAnalysis(state.parsedFile!.rows, mapping);
-    onComplete();
-  } catch (err) {
-    setError(
-      err instanceof Error
-        ? err.message
-        : 'Unable to start the analysis. Please try again.'
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      const {
+        data,
+        error: rpcError,
+      } = await supabase.rpc(
+        'use_analysis_with_records',
+        {
+          p_record_count: recordCount,
+        }
+      );
+
+      if (rpcError) {
+        throw rpcError;
+      }
+
+      if (!data?.allowed) {
+        if (
+          data?.reason ===
+          'record_limit_reached'
+        ) {
+          setError(
+            `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
+          );
+        } else if (
+          data?.reason ===
+          'analysis_limit_reached'
+        ) {
+          setError(
+            `You've used all ${data.analyses_limit} analyses available on your current plan.`
+          );
+        } else if (
+          data?.reason === 'trial_expired'
+        ) {
+          setError(
+            'Your free trial has ended. Please choose a plan to continue using Recoverly.'
+          );
+        } else if (
+          data?.reason === 'not_authenticated'
+        ) {
+          setError(
+            'Please sign in before running an analysis.'
+          );
+        } else if (
+          data?.reason === 'no_subscription'
+        ) {
+          setError(
+            'Your account does not have an active Recoverly subscription.'
+          );
+        } else if (
+          data?.reason === 'invalid_record_count'
+        ) {
+          setError(
+            'The uploaded file does not contain any records to analyze.'
+          );
+        } else {
+          setError(
+            'Analysis is not available on your current account. Please check your subscription.'
+          );
+        }
+
+        return;
+      }
+
+      setColumnMapping(mapping);
+
+      runAnalysis(
+        state.parsedFile!.rows,
+        mapping
+      );
+
+      onComplete();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Unable to start the analysis. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const detectedCount =
     Object.values(mapping).filter(Boolean).length;
 
