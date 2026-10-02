@@ -66,7 +66,7 @@ export function ColumnMappingPage({ onComplete }: ColumnMappingPageProps) {
         throw rpcError;
       }
 
-      if (!data?.allowed) {
+if (!data?.allowed) {
   if (data?.reason === 'record_limit_reached') {
     setError(
       `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
