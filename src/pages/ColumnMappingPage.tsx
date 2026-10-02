@@ -1,4 +1,3 @@
-```tsx
 import { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
@@ -7,7 +6,11 @@ import {
   FIELD_LABELS,
 } from '@/lib/columnDetection';
 import { supabase } from '@/lib/supabase';
-import { ArrowRight, CheckCircle2, Info } from 'lucide-react';
+import {
+  ArrowRight,
+  CheckCircle2,
+  Info,
+} from 'lucide-react';
 import type { ColumnMapping } from '@/types';
 
 interface ColumnMappingPageProps {
@@ -17,21 +20,30 @@ interface ColumnMappingPageProps {
 export function ColumnMappingPage({
   onComplete,
 }: ColumnMappingPageProps) {
-  const { state, setColumnMapping, runAnalysis } = useApp();
+  const {
+    state,
+    setColumnMapping,
+    runAnalysis,
+  } = useApp();
 
-  const headers = state.parsedFile?.headers || [];
+  const headers =
+    state.parsedFile?.headers || [];
 
   const initial = useMemo(
     () => autoDetectColumns(headers),
     [headers]
   );
 
-  const [mapping, setMapping] = useState<ColumnMapping>(
-    state.columnMapping || initial
-  );
+  const [mapping, setMapping] =
+    useState<ColumnMapping>(
+      state.columnMapping || initial
+    );
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState('');
 
   if (!state.parsedFile) {
     return (
@@ -63,14 +75,20 @@ export function ColumnMappingPage({
       } = await supabase.auth.getSession();
 
       if (!session) {
-        setError('Please sign in before running an analysis.');
+        setError(
+          'Please sign in before running an analysis.'
+        );
         return;
       }
 
-      const { data, error: rpcError } = await supabase.rpc(
+      const {
+        data,
+        error: rpcError,
+      } = await supabase.rpc(
         'use_analysis_with_records',
         {
-          p_record_count: state.parsedFile!.rows.length,
+          p_record_count:
+            state.parsedFile!.rows.length,
         }
       );
 
@@ -79,20 +97,32 @@ export function ColumnMappingPage({
       }
 
       if (!data?.allowed) {
-        if (data?.reason === 'record_limit_reached') {
+        if (
+          data?.reason ===
+          'record_limit_reached'
+        ) {
           setError(
             `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
           );
-        } else if (data?.reason === 'analysis_limit_reached') {
+        } else if (
+          data?.reason ===
+          'analysis_limit_reached'
+        ) {
           setError(
             `You've used all ${data.analyses_limit} analyses available on your current plan.`
           );
-        } else if (data?.reason === 'trial_expired') {
+        } else if (
+          data?.reason === 'trial_expired'
+        ) {
           setError(
             'Your free trial has ended. Please choose a plan to continue using Recoverly.'
           );
-        } else if (data?.reason === 'not_authenticated') {
-          setError('Please sign in before running an analysis.');
+        } else if (
+          data?.reason === 'not_authenticated'
+        ) {
+          setError(
+            'Please sign in before running an analysis.'
+          );
         } else {
           setError(
             'Analysis is not available on your current account. Please check your subscription.'
@@ -103,7 +133,12 @@ export function ColumnMappingPage({
       }
 
       setColumnMapping(mapping);
-      runAnalysis(state.parsedFile!.rows, mapping);
+
+      runAnalysis(
+        state.parsedFile!.rows,
+        mapping
+      );
+
       onComplete();
     } catch (err) {
       setError(
@@ -115,6 +150,7 @@ export function ColumnMappingPage({
       setLoading(false);
     }
   };
+
   const detectedCount =
     Object.values(mapping).filter(Boolean).length;
 
@@ -148,7 +184,9 @@ export function ColumnMappingPage({
         <div className="space-y-4">
           {FIELD_KEYS.map((field) => {
             const value =
-              mapping[field as keyof ColumnMapping];
+              mapping[
+                field as keyof ColumnMapping
+              ];
 
             const isDetected =
               value && value !== '';
@@ -188,10 +226,7 @@ export function ColumnMappingPage({
                     </option>
 
                     {headers.map((h) => (
-                      <option
-                        key={h}
-                        value={h}
-                      >
+                      <option key={h} value={h}>
                         {h}
                       </option>
                     ))}
@@ -225,4 +260,3 @@ export function ColumnMappingPage({
     </div>
   );
 }
-```
