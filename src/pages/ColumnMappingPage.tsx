@@ -69,33 +69,27 @@ export function ColumnMappingPage({
       }
 
       const recordCount =
-        state.parsedFile!.rows.length;
+        state.parsedFile?.rows.length || 0;
 
-      const {
-        data,
-        error: rpcError,
-      } = await supabase.rpc(
-        'use_analysis_with_records',
-        {
-          p_record_count: recordCount,
-        }
-      );
+      const { data, error: rpcError } =
+        await supabase.rpc(
+          'use_analysis_with_records',
+          {
+            p_record_count: recordCount,
+          }
+        );
 
       if (rpcError) {
         throw rpcError;
       }
 
       if (!data?.allowed) {
-        if (
-          data?.reason ===
-          'record_limit_reached'
-        ) {
+        if (data?.reason === 'record_limit_reached') {
           setError(
             `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
           );
         } else if (
-          data?.reason ===
-          'analysis_limit_reached'
+          data?.reason === 'analysis_limit_reached'
         ) {
           setError(
             `You've used all ${data.analyses_limit} analyses available on your current plan.`
@@ -111,12 +105,6 @@ export function ColumnMappingPage({
         ) {
           setError(
             'Please sign in before running an analysis.'
-          );
-        } else if (
-          data?.reason === 'no_subscription'
-        ) {
-          setError(
-            'Your account does not have an active Recoverly subscription.'
           );
         } else if (
           data?.reason === 'invalid_record_count'
@@ -136,7 +124,7 @@ export function ColumnMappingPage({
       setColumnMapping(mapping);
 
       runAnalysis(
-        state.parsedFile!.rows,
+        state.parsedFile.rows,
         mapping
       );
 
@@ -172,9 +160,8 @@ export function ColumnMappingPage({
         <Info size={18} className="shrink-0" />
 
         <span>
-          {detectedCount} of {FIELD_KEYS.length}{' '}
-          fields detected. You can adjust any mapping
-          below.
+          {detectedCount} of {FIELD_KEYS.length} fields
+          detected. You can adjust any mapping below.
         </span>
       </div>
 
@@ -185,7 +172,7 @@ export function ColumnMappingPage({
               mapping[field as keyof ColumnMapping];
 
             const isDetected =
-              value && value !== '';
+              Boolean(value && value !== '');
 
             return (
               <div
