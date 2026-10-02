@@ -63,28 +63,14 @@ export function ColumnMappingPage({
       } = await supabase.auth.getSession();
 
       if (!session) {
-        setError(
-          'Please sign in before running an analysis.'
-        );
+        setError('Please sign in before running an analysis.');
         return;
       }
 
-      const recordCount = state.parsedFile.rows.length;
-
-      if (recordCount <= 0) {
-        setError(
-          'Your uploaded file does not contain any records to analyze.'
-        );
-        return;
-      }
-
-      const {
-        data,
-        error: rpcError,
-      } = await supabase.rpc(
+      const { data, error: rpcError } = await supabase.rpc(
         'use_analysis_with_records',
         {
-          p_record_count: recordCount,
+          p_record_count: state.parsedFile!.rows.length,
         }
       );
 
@@ -97,30 +83,16 @@ export function ColumnMappingPage({
           setError(
             `This upload contains ${data.records_requested} records, but you have only ${data.records_remaining} records remaining on your current plan.`
           );
-        } else if (
-          data?.reason === 'analysis_limit_reached'
-        ) {
+        } else if (data?.reason === 'analysis_limit_reached') {
           setError(
             `You've used all ${data.analyses_limit} analyses available on your current plan.`
           );
-        } else if (
-          data?.reason === 'trial_expired'
-        ) {
+        } else if (data?.reason === 'trial_expired') {
           setError(
             'Your free trial has ended. Please choose a plan to continue using Recoverly.'
           );
-        } else if (
-          data?.reason === 'not_authenticated'
-        ) {
-          setError(
-            'Please sign in before running an analysis.'
-          );
-        } else if (
-          data?.reason === 'no_subscription'
-        ) {
-          setError(
-            'No active Recoverly subscription was found for your account.'
-          );
+        } else if (data?.reason === 'not_authenticated') {
+          setError('Please sign in before running an analysis.');
         } else {
           setError(
             'Analysis is not available on your current account. Please check your subscription.'
@@ -131,12 +103,7 @@ export function ColumnMappingPage({
       }
 
       setColumnMapping(mapping);
-
-      runAnalysis(
-        state.parsedFile.rows,
-        mapping
-      );
-
+      runAnalysis(state.parsedFile!.rows, mapping);
       onComplete();
     } catch (err) {
       setError(
