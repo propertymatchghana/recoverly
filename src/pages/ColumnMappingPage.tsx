@@ -20,30 +20,21 @@ interface ColumnMappingPageProps {
 export function ColumnMappingPage({
   onComplete,
 }: ColumnMappingPageProps) {
-  const {
-    state,
-    setColumnMapping,
-    runAnalysis,
-  } = useApp();
+  const { state, setColumnMapping, runAnalysis } = useApp();
 
-  const headers =
-    state.parsedFile?.headers || [];
+  const headers = state.parsedFile?.headers || [];
 
   const initial = useMemo(
     () => autoDetectColumns(headers),
     [headers]
   );
 
-  const [mapping, setMapping] =
-    useState<ColumnMapping>(
-      state.columnMapping || initial
-    );
+  const [mapping, setMapping] = useState<ColumnMapping>(
+    state.columnMapping || initial
+  );
 
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   if (!state.parsedFile) {
     return (
@@ -81,14 +72,16 @@ export function ColumnMappingPage({
         return;
       }
 
+      const recordCount =
+        state.parsedFile!.rows.length;
+
       const {
         data,
         error: rpcError,
       } = await supabase.rpc(
         'use_analysis_with_records',
         {
-          p_record_count:
-            state.parsedFile!.rows.length,
+          p_record_count: recordCount,
         }
       );
 
@@ -168,15 +161,12 @@ export function ColumnMappingPage({
       </div>
 
       <div className="flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-700">
-        <Info
-          size={18}
-          className="shrink-0"
-        />
+        <Info size={18} className="shrink-0" />
 
         <span>
           {detectedCount} of {FIELD_KEYS.length}{' '}
-          fields detected. You can adjust any
-          mapping below.
+          fields detected. You can adjust any mapping
+          below.
         </span>
       </div>
 
@@ -184,9 +174,7 @@ export function ColumnMappingPage({
         <div className="space-y-4">
           {FIELD_KEYS.map((field) => {
             const value =
-              mapping[
-                field as keyof ColumnMapping
-              ];
+              mapping[field as keyof ColumnMapping];
 
             const isDetected =
               value && value !== '';
@@ -253,9 +241,7 @@ export function ColumnMappingPage({
           ? 'Checking your analysis access...'
           : 'Continue to analysis'}
 
-        {!loading && (
-          <ArrowRight size={18} />
-        )}
+        {!loading && <ArrowRight size={18} />}
       </button>
     </div>
   );
