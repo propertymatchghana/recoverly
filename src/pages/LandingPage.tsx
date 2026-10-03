@@ -1,4 +1,4 @@
-```tsx
+
 import {
   ShieldCheck,
   Upload,
@@ -328,53 +328,61 @@ export function LandingPage({
               {
                 icon: <AlertCircle size={20} />,
                 text: 'Overdue invoices',
-                color: 'text-red-600 bg-red-50',
+                bg: 'bg-red-50',
+                textColor: 'text-red-600',
               },
               {
                 icon: <Clock size={20} />,
                 text: 'Unanswered quotations',
-                color: 'text-orange-600 bg-orange-50',
+                bg: 'bg-orange-50',
+                textColor: 'text-orange-600',
               },
               {
                 icon: <Users size={20} />,
                 text: 'Customers needing follow-up',
-                color: 'text-orange-600 bg-orange-50',
+                bg: 'bg-orange-50',
+                textColor: 'text-orange-600',
               },
               {
                 icon: <Clock size={20} />,
                 text: 'Upcoming payment deadlines',
-                color: 'text-yellow-600 bg-yellow-50',
+                bg: 'bg-yellow-50',
+                textColor: 'text-yellow-600',
               },
               {
                 icon: <Users size={20} />,
                 text: 'Inactive customers',
-                color: 'text-gray-600 bg-gray-100',
+                bg: 'bg-gray-100',
+                textColor: 'text-gray-600',
               },
               {
                 icon: <TrendingUp size={20} />,
                 text: 'High-value opportunities',
-                color: 'text-green-600 bg-green-50',
+                bg: 'bg-green-50',
+                textColor: 'text-green-600',
               },
               {
                 icon: <FileWarning size={20} />,
                 text: 'Missing or incomplete information',
-                color: 'text-gray-600 bg-gray-100',
+                bg: 'bg-gray-100',
+                textColor: 'text-gray-600',
               },
               {
                 icon: <CheckCircle2 size={20} />,
                 text: 'Healthy records with no action needed',
-                color: 'text-green-600 bg-green-50',
+                bg: 'bg-green-50',
+                textColor: 'text-green-600',
               },
             ].map((item, i) => (
               <div
                 key={i}
                 className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4"
               >
-               <div
-  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-100"
->
-  {item.icon}
-</div>
+                <div
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${item.bg} ${item.textColor}`}
+                >
+                  {item.icon}
+                </div>
 
                 <span className="text-sm font-medium text-gray-700">
                   {item.text}
