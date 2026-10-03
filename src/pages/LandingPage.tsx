@@ -19,7 +19,10 @@ interface LandingPageProps {
   onLogin: () => void;
 }
 
-export function LandingPage({ onTry, onLogin }: LandingPageProps) {
+export function LandingPage({
+  onTry,
+  onLogin,
+}: LandingPageProps) {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -29,7 +32,10 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white">
               <ShieldCheck size={20} />
             </div>
-            <span className="text-lg font-bold text-gray-900">Recoverly</span>
+
+            <span className="text-lg font-bold text-gray-900">
+              Recoverly
+            </span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -40,7 +46,10 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
               Log in
             </button>
 
-            <button onClick={onTry} className="btn-primary">
+            <button
+              onClick={onTry}
+              className="btn-primary"
+            >
               Start Free Trial
             </button>
           </div>
@@ -101,6 +110,7 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
                 <div className="h-3 w-3 rounded-full bg-red-400" />
                 <div className="h-3 w-3 rounded-full bg-yellow-400" />
                 <div className="h-3 w-3 rounded-full bg-green-400" />
+
                 <span className="ml-2 text-xs text-gray-400">
                   Recoverly Dashboard
                 </span>
@@ -111,9 +121,11 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
                   <p className="text-xs text-gray-500">
                     Money needing attention
                   </p>
+
                   <p className="mt-1 text-xl font-bold text-red-600">
                     GH₵18,500
                   </p>
+
                   <p className="text-xs text-gray-400">
                     3 records · Potentially overdue
                   </p>
@@ -123,25 +135,39 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
                   <p className="text-xs text-gray-500">
                     Sales opportunities
                   </p>
+
                   <p className="mt-1 text-xl font-bold text-orange-600">
                     GH₵32,000
                   </p>
+
                   <p className="text-xs text-gray-400">
                     5 records · Awaiting response
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                  <p className="text-xs text-gray-500">Follow-ups</p>
-                  <p className="mt-1 text-xl font-bold text-gray-900">7</p>
+                  <p className="text-xs text-gray-500">
+                    Follow-ups
+                  </p>
+
+                  <p className="mt-1 text-xl font-bold text-gray-900">
+                    7
+                  </p>
+
                   <p className="text-xs text-gray-400">
                     Customers needing attention
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                  <p className="text-xs text-gray-500">High priority</p>
-                  <p className="mt-1 text-xl font-bold text-red-600">4</p>
+                  <p className="text-xs text-gray-500">
+                    High priority
+                  </p>
+
+                  <p className="mt-1 text-xl font-bold text-red-600">
+                    4
+                  </p>
+
                   <p className="text-xs text-gray-400">
                     Actions recommended today
                   </p>
@@ -392,6 +418,7 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
                   size={18}
                   className="shrink-0 text-brand-600"
                 />
+
                 <span className="text-sm font-medium text-gray-700">
                   {business}
                 </span>
@@ -414,7 +441,10 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-16 sm:py-24">
+      <section
+        id="pricing"
+        className="py-16 sm:py-24"
+      >
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">
@@ -446,7 +476,11 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
                 <span className="text-3xl font-bold text-gray-900">
                   GH₵150
                 </span>
-                <span className="text-sm text-gray-500"> / month</span>
+
+                <span className="text-sm text-gray-500">
+                  {' '}
+                  / month
+                </span>
               </div>
 
               <p className="mt-2 text-sm font-medium text-brand-600">
@@ -468,6 +502,7 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
                       size={17}
                       className="mt-0.5 shrink-0 text-brand-600"
                     />
+
                     {item}
                   </li>
                 ))}
@@ -499,7 +534,11 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
                 <span className="text-3xl font-bold text-gray-900">
                   GH₵300
                 </span>
-                <span className="text-sm text-gray-500"> / month</span>
+
+                <span className="text-sm text-gray-500">
+                  {' '}
+                  / month
+                </span>
               </div>
 
               <p className="mt-2 text-sm font-medium text-brand-600">
@@ -521,6 +560,7 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
                       size={17}
                       className="mt-0.5 shrink-0 text-brand-600"
                     />
+
                     {item}
                   </li>
                 ))}
@@ -536,7 +576,9 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
 
             {/* Pro */}
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900">Pro</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Pro
+              </h3>
 
               <p className="mt-2 text-sm text-gray-500">
                 For businesses handling larger volumes.
@@ -546,7 +588,11 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
                 <span className="text-3xl font-bold text-gray-900">
                   GH₵600
                 </span>
-                <span className="text-sm text-gray-500"> / month</span>
+
+                <span className="text-sm text-gray-500">
+                  {' '}
+                  / month
+                </span>
               </div>
 
               <p className="mt-2 text-sm font-medium text-brand-600">
@@ -568,6 +614,7 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
                       size={17}
                       className="mt-0.5 shrink-0 text-brand-600"
                     />
+
                     {item}
                   </li>
                 ))}
@@ -622,7 +669,9 @@ export function LandingPage({ onTry, onLogin }: LandingPageProps) {
               <ShieldCheck size={16} />
             </div>
 
-            <span className="font-semibold text-gray-700">Recoverly</span>
+            <span className="font-semibold text-gray-700">
+              Recoverly
+            </span>
           </div>
 
           <p className="text-sm text-gray-400">
