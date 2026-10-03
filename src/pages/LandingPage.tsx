@@ -370,11 +370,11 @@ export function LandingPage({
                 key={i}
                 className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4"
               >
-                <div
-                 className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${item.color}`}
+               <div
+  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-100"
 >
-                  {item.icon}
-                </div>
+  {item.icon}
+</div>
 
                 <span className="text-sm font-medium text-gray-700">
                   {item.text}
