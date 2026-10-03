@@ -27,16 +27,17 @@ export function AuthPage({
 
     try {
       if (mode === 'signup') {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: name,
-              business_name: name,
-            },
-          },
-        });
+       const { error: signUpError } = await supabase.auth.signUp({
+  email,
+  password,
+  options: {
+    emailRedirectTo: 'https://propertymatchghana.github.io/recoverly/',
+    data: {
+      full_name: name,
+      business_name: name,
+    },
+  },
+});
 
         if (signUpError) {
           throw signUpError;
